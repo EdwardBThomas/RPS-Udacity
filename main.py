@@ -1,25 +1,11 @@
-"""This program plays a game of Rock, Paper, Scissors between two Players,
-and reports both Player's scores each round."""
+import random
 
 moves = ['rock', 'paper', 'scissors']
 
-"""The Player class is the parent class for all of the Players
-in this game"""
-
-import random
-# from itertools import cycle
-# cycled_moves = cycle(moves)
-
 
 class Player:
-    score = 0
-
-    def __init__(self):
-        self.p1_move = random.choice(moves)
-        self.p2_move = random.choice(moves)
-
-    def name(self): #code to display the player name: Cycle, Reflect...
-        return self.__class__.__name__
+    p1_move = random.choice(moves)
+    p2_move = random.choice(moves)
 
     def learn(self, p1_move, p2_move):
         pass
@@ -41,42 +27,17 @@ class ReflectPlayer(Player):
 
     def learn(self, p1_move, p2_move):
         self.p2_move = p2_move
-        # if self.p2_move is None:
-        #     return random.choice(moves)
-        # else:
-        #     return self.p2_move
 
 
 class CyclePlayer(Player):
-
-    def __init__(self):
-        super().__init__()
-        self.index = None
-        #A PyCharm prompt stated a self.index was necessary to make the
-        # modulus operation work; another PyCharm prompt said a super() was
-        # needed to make the self.index work...
+    def move(self):
+        index = moves.index(self.p1_move) + 1
+        if index >= len(moves):
+            index = 0
+        return moves[index % len(moves)]
 
     def learn(self, p1_move, p2_move):
         self.p1_move = p1_move
-
-    # def move(self):
-    #     if self.p1_move is None:
-    #         return random.choice(moves)
-    #     else:
-    #         while True:
-    #             move = moves[self.index]
-    #             self.index = (self.index + 1) % len(moves)
-
-    def move(self):
-        if self.p1_move is None:
-            return random.choice(moves)
-        else:
-            move = moves[self.index]
-            self.index = (self.index + 1) % len(moves)
-
-    # def move(self):
-    #     move = moves[self.index]
-    #     self.index = (self.index + 1) % len(moves)
 
 
 class HumanPlayer(Player):
@@ -96,29 +57,39 @@ def beats(one, two):
 
 
 class Game:
+    p1_score = 0
+    p2_score = 0
+
     def __init__(self, p1, p2):
         self.p1 = p1
         self.p2 = p2
 
     def play_round(self):
-        move1 = self.p1.move
-        move2 = self.p2.move
-        print(f"Player 1: {move1}  Player 2: {move2}")
+        move1 = self.p1.move()
+        move2 = self.p2.move()
+        print(f"Player One: {move1}  Player Two: {move2}")
         self.p1.learn(move1, move2)
         self.p2.learn(move2, move1)
-        if self.p1.move == self.p2.move:
+        if move1 == move2:
             print("A tie.")
-        elif beats(self.p1.move, self.p2.move):
-            self.p1.score += 1
+        elif beats(move1, move2):
+            self.p1_score += 1
         else:
-            self.p2.score += 1
+            self.p2_score += 1
+        print(f"Scores: Player One, {self.p1_score}; Player Two,"
+              f" {self.p2_score}")
 
     def play_game(self):
         print("Game start!")
-        for round in range(5):
+        for round in range(3):
             print(f"Round {round}:")
             self.play_round()
-        print("Game over!")
+        if self.p1_score > self.p2_score:
+            print(f"Player One wins with a score of {self.p1_score}.")
+        elif self.p1_score == self.p2_score:
+            print(f"The game is a tie at {self.p1_score}.")
+        else:
+            print(f"Player Two wins with a score of {self.p2_score}.")
 
 
 if __name__ == '__main__':
@@ -129,6 +100,6 @@ if __name__ == '__main__':
         ReflectPlayer()
     ]
     p1 = HumanPlayer()
-    p2 = CyclePlayer()
+    p2 = random.choice(strategies)
     game = Game(p1, p2)
     game.play_game()
