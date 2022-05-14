@@ -1,5 +1,6 @@
 import random
 
+
 moves = ['rock', 'paper', 'scissors']
 
 
@@ -73,16 +74,26 @@ class Game:
         if move1 == move2:
             print("A tie.")
         elif beats(move1, move2):
+            print("Player One wins this round.")
             self.p1_score += 1
         else:
+            print("Player Two wins this round.")
             self.p2_score += 1
         print(f"Scores: Player One, {self.p1_score}; Player Two,"
               f" {self.p2_score}")
 
     def play_game(self):
-        print("Game start!")
-        for round in range(3):
-            print(f"Round {round}:")
+        length = None
+        while True:
+            length = input('How many rounds to play? Numeric '
+                           'integers like 3 or 7 only.')
+            try:
+                length = int(length)
+                break
+            except:
+                continue
+        for round in range(length):
+            print(f"Round {round+1} of {length}:")
             self.play_round()
         if self.p1_score > self.p2_score:
             print(f"Player One wins with a score of {self.p1_score}.")
